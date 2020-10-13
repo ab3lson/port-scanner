@@ -44,15 +44,15 @@ if __name__ == "__main__":
 
 
   args = parser.parse_args()
-
+  print(args)
   if args.tcp:
-    create_live_servers.create_multiple(args.create[0])
+    scan.tcp(args.tcp)
   elif args.udp:
-    create_live_servers.create_one(args.create_one[0])
+    scan.udp(args.udp)
   elif args.ping:
-    delete_live_servers.delete_multiple()
+    scan.ping(args.ping)
   elif args.trace:
-    delete_live_servers.delete_one(args.delete_one[0])
+    scan.trace(args.trace)
   elif len(sys.argv) < 2:
     #more options can be created in main menu by appending to this array
     menu_options = ["TCP Scan", "UDP Scan", "Ping Scan", "Traceroute"]
@@ -65,14 +65,15 @@ if __name__ == "__main__":
     except: #Fails if user input is not an int
       print(f"{color.RED}[ERROR]{color.RESET} Invalid input.")
       exit()
+    ips, ports = input_parser.menu() #prompts user to input ip and port ranges for scans and returns lists
     if user_choice == "1":
-      webscanner.menu("tcp")
+      scan.tcp(ips, ports)
     elif user_choice == "2":
-      delete_live_servers.menu()
+      scan.udp(ips, ports)
     elif user_choice == "3":
-      admin_tools.menu("enter")
+      scan.ping(ips, ports)
     elif user_choice == "4":
-      admin_tools.menu("move")
+      scan.trace(ips, ports)
     else:
       exit()
   else:

@@ -1,4 +1,4 @@
-import variables
+from . import variables
 import ipaddress
 
 def parse_ips(ips):
@@ -94,17 +94,15 @@ def parse_ports(ports):
       for number in range(int(first),int(last)+1):
             parsed.append(str(number))
     else: parsed.append(str(value))
-  print(parsed)
+  return parsed
 
 
-def menu(user_option):
+def menu():
   ip_input = input("What IP address(s) do you want to scan?: ")
   port_input = input("What ports do you want to scan?: ")
   ips = parse_ips(ip_input)
-  ports = parse_ports(port_input)
-
-  if user_option == "tcp":
-    pass
+  ports = parse_ports(port_input)  
+  return ips, ports 
 
 if __name__ == "__main__":
   menu("tcp")
