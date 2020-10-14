@@ -1,9 +1,11 @@
 from . import variables
 import ipaddress
+import logging
 
 def parse_ips(ips):
   if "/" in ips:
-    return [str(ip) for ip in ipaddress.IPv4Network(ips)]
+    parsed = [str(ip) for ip in ipaddress.IPv4Network(ips)]
+    return parsed
   elif "-" in ips:
     parsed = []
     temp_ips = []
@@ -41,7 +43,6 @@ def parse_ips(ips):
           for ip_template in temp_ips3:
             parsed.append(ip_template + str(octet))
     return parsed
-
   elif "*" in ips:
     parsed = []
     temp_ips = []
@@ -63,9 +64,7 @@ def parse_ips(ips):
               temp_ips3.append(ip_template + str(number) + ".")
         elif enum == 3:
           for ip_template in temp_ips3:
-            print("HIT1")
             for number in range(1,256):
-              print("Hit:", number)
               parsed.append(ip_template + str(number))       
       else:
         if enum == 0:
@@ -82,8 +81,9 @@ def parse_ips(ips):
     return parsed
   elif "," in ips:
     parsed = ips.replace(" ", "").split(",")
+    return parsed
   else:
-    return parsed.append(ips)
+    return [ips]
 
 def parse_ports(ports):
   parsed = []
