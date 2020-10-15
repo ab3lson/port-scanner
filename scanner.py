@@ -34,24 +34,38 @@ def main_menu(menu_options):
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(prog='scanner.py', description="Port scanner for IT 567.")
   tools = parser.add_argument_group("Ping scans").add_mutually_exclusive_group()
+  scans = parser.add_argument_group("Port scans").add_mutually_exclusive_group()
 
-  parser.add_argument('-t','--tcp', type=str, action='store', metavar='IP', nargs=1, help='Conducts a TCP scan on the provided IP(s)')
-  parser.add_argument('-u','--udp', type=str, action='store', metavar='IP', nargs=1, help='Conducts a UDP scan on the provided IP(s)')
+  parser.add_argument('-v', '--verbose', action='count', default=0, help='-v,-vv supported for increased verbosity')
   parser.add_argument('-p','--ports', type=str, action='store', metavar='PORTS', nargs=1, help='Ports to scan (Comma separated).')
   parser.add_argument('-i','--input', type=str, action='store', metavar='PATH', nargs=1, help='Text file with csv of desired ports.')
   parser.add_argument('-o','--out', type=str, action='store', metavar='PATH', nargs=1, help='Path to output file to save the results.')
+  scans.add_argument('-t','--tcp', type=str, action='store', metavar='IP', nargs=1, help='Conducts a TCP scan on the provided IP(s)')
+  scans.add_argument('-u','--udp', type=str, action='store', metavar='IP', nargs=1, help='Conducts a UDP scan on the provided IP(s)')
   tools.add_argument('-P','--ping', type=str, action='store', metavar='IP', nargs=1, help='Conducts a ping scan on the provided IP(s)')
   tools.add_argument('-T','--trace', type=str, action='store', metavar='IP', nargs=1, help='Conducts a traceroute on the provided IP.')
-  parser.add_argument('-v', '--verbose', action='count', default=0, help='-v,-vv supported for increased verbosity')
 
   args = parser.parse_args()
+  if ((args.tcp or args.udp) and (args.ports is None)):
+    parser.error("Port scans require --ports.")
   levels = [logging.WARNING, logging.INFO, logging.DEBUG]
   level = levels[min(len(levels)-1,args.verbose)]  # capped to number of levels
 
-  if args.out:
-    logging.basicConfig(level=level, filename=args.out[0], format="%(levelname)-8s: %(message)s")
+  root = logging.getLogger()
+  root.setLevel(level)
+  console = logging.StreamHandler(sys.stdout)
+  console.setLevel(level)
+  if args.verbose > 1:
+    console.setFormatter(logging.Formatter("%(name)-12s %(levelname)-8s: %(message)s"))
   else:
-    logging.basicConfig(level=level, format="%(levelname)-8s: %(message)s")
+    console.setFormatter(logging.Formatter("%(message)s"))
+  root.addHandler(console)
+
+  if args.out:
+    output_file = logging.FileHandler(args.out[0], 'w+')
+    output_file.setLevel(logging.INFO)
+    output_file.setFormatter(logging.Formatter("%(message)s"))
+    root.addHandler(output_file)
   
   logging.debug(args)
   if args.ports:

@@ -2,6 +2,8 @@ from . import variables
 import ipaddress
 import logging
 
+logger = logging.getLogger(__name__)
+
 def parse_ips(ips):
   if "/" in ips:
     parsed = [str(ip) for ip in ipaddress.IPv4Network(ips)]
