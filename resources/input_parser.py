@@ -107,4 +107,4 @@ def menu():
   return ips, ports 
 
 if __name__ == "__main__":
-  menu("tcp")
+  menu()
