@@ -38,6 +38,7 @@ if __name__ == "__main__":
 
   parser.add_argument('-v', '--verbose', action='count', default=0, help='-v,-vv supported for increased verbosity')
   parser.add_argument('-p','--ports', type=str, action='store', metavar='PORTS', nargs=1, help='Ports to scan (Comma separated).')
+  parser.add_argument('--top-ports', type=str, action='store', metavar='PORTS', nargs=1, help='Most common ports will be scanned (20 or 1000)')
   parser.add_argument('-o','--output', type=str, action='store', metavar='PATH', nargs=1, help='Path to output file to save the results.')
   scans.add_argument('-t','--tcp', type=str, action='store', metavar='IP', nargs=1, help='Conducts a TCP scan on the provided IP(s)')
   scans.add_argument('-u','--udp', type=str, action='store', metavar='IP', nargs=1, help='Conducts a UDP scan on the provided IP(s)')
@@ -45,12 +46,13 @@ if __name__ == "__main__":
   tools.add_argument('-T','--trace', type=str, action='store', metavar='IP', nargs=1, help='Conducts a traceroute on the provided IP.')
 
   args = parser.parse_args()
-  if ((args.tcp or args.udp) and (args.ports is None)):
-    parser.error("TCP/UDP scans require --ports.")
+  if ((args.tcp or args.udp) and (args.ports is None and args.top_ports is None)):
+    parser.error("TCP/UDP scans require --ports or --top-ports.")
   levels = [logging.WARNING, logging.INFO, logging.DEBUG]
   level = levels[min(len(levels)-1,args.verbose)]  # capped to number of levels
-  
-
+  if args.top_ports:
+    if args.top_ports[0] not in ['20', '1000']:
+      parser.error("--top-ports must be 20 or 1000.")
   root = logging.getLogger()
   root.setLevel(logging.DEBUG)
   console = logging.StreamHandler(sys.stdout)
@@ -72,8 +74,15 @@ if __name__ == "__main__":
   logging.debug(args) #prints the supplied arguments
 
   if args.ports:
-      args.ports[0] = input_parser.parse_ports(args.ports[0])
-      logging.debug(f"Scanning Ports: {args.ports[0]}")
+    args.ports[0] = input_parser.parse_ports(args.ports[0])
+    logging.debug(f"Scanning Ports: {args.ports[0]}")
+  if args.top_ports:
+    args.ports = ['']
+    if args.top_ports[0] == '1000':
+      args.ports[0] = input_parser.parse_ports(variables.top_1000_ports)
+    elif args.top_ports[0] == '20':
+      args.ports[0] = input_parser.parse_ports(variables.top_20_ports)
+    logging.debug(f"Scanning Ports: {args.ports[0]}")
   if args.tcp:
     args.tcp[0] = input_parser.parse_ips(args.tcp[0])
     logging.debug(f"Running TCP Scan for IPs: {args.tcp[0]}")
