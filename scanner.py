@@ -38,8 +38,7 @@ if __name__ == "__main__":
 
   parser.add_argument('-v', '--verbose', action='count', default=0, help='-v,-vv supported for increased verbosity')
   parser.add_argument('-p','--ports', type=str, action='store', metavar='PORTS', nargs=1, help='Ports to scan (Comma separated).')
-  parser.add_argument('-i','--input', type=str, action='store', metavar='PATH', nargs=1, help='Text file with csv of desired ports.')
-  parser.add_argument('-o','--out', type=str, action='store', metavar='PATH', nargs=1, help='Path to output file to save the results.')
+  parser.add_argument('-o','--output', type=str, action='store', metavar='PATH', nargs=1, help='Path to output file to save the results.')
   scans.add_argument('-t','--tcp', type=str, action='store', metavar='IP', nargs=1, help='Conducts a TCP scan on the provided IP(s)')
   scans.add_argument('-u','--udp', type=str, action='store', metavar='IP', nargs=1, help='Conducts a UDP scan on the provided IP(s)')
   tools.add_argument('-P','--ping', type=str, action='store', metavar='IP', nargs=1, help='Conducts a ping scan on the provided IP(s)')
@@ -50,24 +49,26 @@ if __name__ == "__main__":
     parser.error("Port scans require --ports.")
   levels = [logging.WARNING, logging.INFO, logging.DEBUG]
   level = levels[min(len(levels)-1,args.verbose)]  # capped to number of levels
+  
 
   root = logging.getLogger()
-  root.setLevel(level)
+  root.setLevel(logging.DEBUG)
   console = logging.StreamHandler(sys.stdout)
-  console.setLevel(level)
+  console.setLevel(logging.INFO)
   if args.verbose > 1:
     console.setFormatter(logging.Formatter("%(name)-12s %(levelname)-8s: %(message)s"))
   else:
     console.setFormatter(logging.Formatter("%(message)s"))
   root.addHandler(console)
 
-  if args.out:
-    output_file = logging.FileHandler(args.out[0], 'w+')
+  if args.output:
+    output_file = logging.FileHandler(args.output[0], 'w+')
     output_file.setLevel(logging.INFO)
     output_file.setFormatter(logging.Formatter("%(message)s"))
     root.addHandler(output_file)
   
-  logging.debug(args)
+  logging.info(args) #prints the supplied arguments
+
   if args.ports:
       args.ports[0] = input_parser.parse_ports(args.ports[0])
       logging.debug(f"Scanning Ports: {args.ports[0]}")
@@ -87,7 +88,7 @@ if __name__ == "__main__":
     args.trace[0] = input_parser.parse_ips(args.trace[0])
     logging.debug(f"Running Traceroute for IPs: {args.trace[0]}")
     scan.trace(args.trace[0])
-  elif len(sys.argv) < 2:
+  elif len(sys.argv) < 2 or args.verbose or args.output:
     #more options can be created in main menu by appending to this array
     menu_options = ["TCP Scan", "UDP Scan", "Ping Scan", "Traceroute"]
     main_menu(menu_options) #prints main menu
@@ -105,14 +106,13 @@ if __name__ == "__main__":
     elif user_choice == "2":
       scan.udp(ips, ports)
     elif user_choice == "3":
-      scan.ping(ips, ports)
+      scan.ping(ips,)
     elif user_choice == "4":
-      scan.trace(ips, ports)
+      scan.trace(ips)
     else:
       exit()
   else:
-    raise Exception("Invalid arguments were chosen.")
-    logging.error("Invalid argument.")
+    parser.error("Invalid argument.")
     exit()
     
   
