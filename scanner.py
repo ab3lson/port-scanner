@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
   args = parser.parse_args()
   if ((args.tcp or args.udp) and (args.ports is None)):
-    parser.error("Port scans require --ports.")
+    parser.error("TCP/UDP scans require --ports.")
   levels = [logging.WARNING, logging.INFO, logging.DEBUG]
   level = levels[min(len(levels)-1,args.verbose)]  # capped to number of levels
   
@@ -55,8 +55,10 @@ if __name__ == "__main__":
   root.setLevel(logging.DEBUG)
   console = logging.StreamHandler(sys.stdout)
   console.setLevel(logging.INFO)
-  if args.verbose > 1:
+  if args.verbose >= 2:
     console.setFormatter(logging.Formatter("%(name)-12s %(levelname)-8s: %(message)s"))
+  elif args.verbose == 1:
+    console.setFormatter(logging.Formatter("%(asctime)-15s: %(message)s"))
   else:
     console.setFormatter(logging.Formatter("%(message)s"))
   root.addHandler(console)
@@ -67,7 +69,7 @@ if __name__ == "__main__":
     output_file.setFormatter(logging.Formatter("%(message)s"))
     root.addHandler(output_file)
   
-  logging.info(args) #prints the supplied arguments
+  logging.debug(args) #prints the supplied arguments
 
   if args.ports:
       args.ports[0] = input_parser.parse_ports(args.ports[0])
