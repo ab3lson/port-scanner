@@ -107,6 +107,9 @@ The following arguments are accepted:
 ### Traceroute
 ![Traceroute Scan](trace_demo.jpg)
 
+### Debug Mode
+![-vv Debug Mode](debug_mode.jpg)
+
 
 
 
