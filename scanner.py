@@ -48,9 +48,8 @@ if __name__ == "__main__":
   args = parser.parse_args()
   if ((args.tcp or args.udp) and (args.ports is None and args.top_ports is None)):
     parser.error("TCP/UDP scans require --ports or --top-ports.")
-  levels = [logging.WARNING, logging.INFO, logging.DEBUG]
+  levels = [logging.INFO, logging.INFO, logging.DEBUG]
   level = levels[min(len(levels)-1,args.verbose)]  # capped to number of levels
-
 
   if args.top_ports:
     if args.top_ports[0] not in ['20', '1000']:
