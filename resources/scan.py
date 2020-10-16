@@ -3,7 +3,9 @@ import subprocess
 from datetime import datetime
 import logging
 import shlex
-from scapy.all import *
+try:
+  from scapy.all import *
+except: print("WARNING: Scapy is not installed. Traceroute will not function properly.")
 
 logger = logging.getLogger("scan.py")
 start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
