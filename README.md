@@ -68,6 +68,7 @@ The following arguments are accepted:
   * A traceroute is conducted
 
 **Each of the above commands must be followed by an IP address or range of IP addresses.** IPs can be given as follows:
+
 `192.168.2.15,192.168.2.16`
 
 `10.50.60-63.1-100`

@@ -50,13 +50,15 @@ if __name__ == "__main__":
     parser.error("TCP/UDP scans require --ports or --top-ports.")
   levels = [logging.WARNING, logging.INFO, logging.DEBUG]
   level = levels[min(len(levels)-1,args.verbose)]  # capped to number of levels
+
+
   if args.top_ports:
     if args.top_ports[0] not in ['20', '1000']:
       parser.error("--top-ports must be 20 or 1000.")
   root = logging.getLogger()
   root.setLevel(logging.DEBUG)
   console = logging.StreamHandler(sys.stdout)
-  console.setLevel(logging.INFO)
+  console.setLevel(level)
   if args.verbose >= 2:
     console.setFormatter(logging.Formatter("%(name)-12s %(levelname)-8s: %(message)s"))
   elif args.verbose == 1:
