@@ -103,9 +103,6 @@ The following arguments are accepted:
 ### ICMP Scan
 ![ICMP Scan](icmp_demo.jpg)
 
-### Traceroute
-![Traceroute Scan](trace_demo.jpg)
-
 ### Debug Mode
 ![-vv Debug Mode](debug_mode.jpg)
 
